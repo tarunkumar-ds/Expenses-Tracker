@@ -1,49 +1,66 @@
 import sqlite3
-
 DB_NAME = "expenses.db"
-
-# ---------------- CREATE DATABASE ---------------- #
 def create_db():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    """
+    Create expenses table if it does not exist.
+    """
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date TEXT,
-            category TEXT,
-            description TEXT,
-            amount REAL,
-            payment_mode TEXT
-        )
-    """)
+    try:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
 
-    conn.commit()
-    conn.close()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS expenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date TEXT,
+                category TEXT,
+                description TEXT,
+                amount REAL,
+                payment_mode TEXT
+            )
+        """)
 
+        conn.commit()
+        conn.close()
 
-# ---------------- ADD EXPENSE ---------------- #
+    except Exception as e:
+        print("Database creation error:", e)
 def add_expense(date, category, description, amount, payment_mode):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    """
+    Insert new expense record into database.
+    """
 
-    cursor.execute("""
-        INSERT INTO expenses 
-        (date, category, description, amount, payment_mode)
-        VALUES (?, ?, ?, ?, ?)
-    """, (date, category, description, amount, payment_mode))
+    try:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
 
-    conn.commit()
-    conn.close()
+        cursor.execute("""
+            INSERT INTO expenses
+            (date, category, description, amount, payment_mode)
+            VALUES (?, ?, ?, ?, ?)
+        """, (date, category, description, amount, payment_mode))
 
+        conn.commit()
+        conn.close()
 
-# ---------------- FETCH ALL EXPENSES ---------------- #
+    except Exception as e:
+        print("Insert error:", e)
 def get_expenses():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    """
+    Fetch all expenses from database.
+    """
 
-    cursor.execute("SELECT * FROM expenses ORDER BY date DESC")
-    data = cursor.fetchall()
+    try:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
 
-    conn.close()
-    return data
+        cursor.execute("SELECT * FROM expenses ORDER BY date DESC")
+        rows = cursor.fetchall()
+
+        conn.close()
+
+        return rows
+
+    except Exception as e:
+        print("Fetch error:", e)
+        return []
